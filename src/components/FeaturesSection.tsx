@@ -12,16 +12,6 @@ const features = [
     description: "Access curated investment opportunities and portfolio strategies designed for long-term growth."
   },
   {
-    icon: Shield,
-    title: "Salary Negotiation Tools",
-    description: "Close the pay gap with data-driven salary insights and negotiation scripts that empower you."
-  },
-  {
-    icon: Users,
-    title: "Community Support",
-    description: "Connect with like-minded women, share experiences, and learn from financial experts."
-  },
-  {
     icon: Sparkles,
     title: "AI-Powered Advisor",
     description: "Get instant answers to your financial questions with our intelligent AI assistant."
@@ -49,25 +39,26 @@ const FeaturesSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="group p-8 rounded-2xl border border-border bg-card hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="w-12 h-12 rounded-xl bg-hero-gradient flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <feature.icon className="h-6 w-6 text-primary-foreground" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="group p-8 rounded-2xl border border-border bg-card hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-12 h-12 rounded-xl bg-hero-gradient flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <feature.icon className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold font-display text-foreground mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold font-display text-foreground mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-muted-foreground">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+
       </div>
     </section>
   );
