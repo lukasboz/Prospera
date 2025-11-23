@@ -7,46 +7,59 @@ const Questions = () => {
   const [selectedOptionsQ1, setSelectedOptionsQ1] = useState<string[]>([]);
   const [demographicsAnswers, setDemographicsAnswers] = useState<{ [key: string]: string }>({});
 
-  const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, 5));
+  const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, 1));
   const goPrev = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
-  const question1Options = [
-    {
-      category: "Save for retirement",
-      items: [
-        "Maximize government incentives",
-        "Plan for early retirement",
-        "Contribute regularly (monthly/weekly)",
-        "Take advantage of compounding",
-      ],
-    },
-    {
-      category: "Tax-free savings growth",
-      items: ["Low-risk investments", "Access funds without penalty", "Start small, learn as I go"],
-    },
-    {
-      category: "Save for your children’s education",
-      items: ["Maximize government incentives", "Take advantage of compounding"],
-    },
-    {
-      category: "Save for my first home",
-      items: [
-        "Tax-free savings growth for home purchase",
-        "Contribute regularly",
-        "Access funds for first home without penalty",
-      ],
-    },
-    {
-      category: "Plan for medical or disability needs",
-      items: [
-        "Maximize government incentives",
-        "Contribute regularly",
-        "Take advantage of compounding",
-        "Build an emergency fund",
-        "Save for a major purchase",
-      ],
-    },
-  ];
+const question1Options = [
+  {
+    category: "RRSP Goals",
+    items: [
+      "Save for retirement",
+      "Maximize government incentives",
+      "Plan for early retirement",
+      "Contribute regularly (monthly/weekly)",
+      "Take advantage of compounding",
+    ],
+  },
+  {
+    category: "TFSA Goals",
+    items: [
+      "Tax-free savings growth",
+      "Low-risk investments",
+      "Access funds without penalty",
+      "Start small, learn as I go",
+    ],
+  },
+  {
+    category: "RESP Goals",
+    items: [
+      "Save for your children’s education",
+      "Maximize government incentives",
+      "Take advantage of compounding",
+    ],
+  },
+  {
+    category: "FHSA Goals",
+    items: [
+      "Save for my first home",
+      "Tax-free savings growth for home purchase",
+      "Contribute regularly",
+      "Access funds for first home without penalty",
+    ],
+  },
+  {
+    category: "RDSP Goals",
+    items: [
+      "Plan for medical or disability needs (*)", // note: more points
+      "Maximize government incentives",
+      "Contribute regularly",
+      "Take advantage of compounding",
+      "Build an emergency fund",
+      "Save for a major purchase",
+    ],
+  },
+];
+
 
   const toggleOptionQ1 = (option: string) => {
     setSelectedOptionsQ1((prev) =>
@@ -85,6 +98,8 @@ const Questions = () => {
     setDemographicsAnswers((prev) => ({ ...prev, [key]: value }));
   };
 
+  const allFieldsFilled = question2Fields.every((field) => demographicsAnswers[field.key]?.trim());
+
   return (
     <div>
       <Navbar />
@@ -96,7 +111,7 @@ const Questions = () => {
         >
           {/* Question Header */}
           <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center font-display">
-            Question {currentIndex + 1} of 6
+            Question {currentIndex + 1} of 2
           </h2>
 
           {/* Question 1 */}
@@ -128,7 +143,7 @@ const Questions = () => {
             </div>
           )}
 
-          {/* Question 2 - Demographics */}
+          {/* Question 2 */}
           {currentIndex === 1 && (
             <div className="flex flex-col items-center gap-6 w-full">
               {question2Fields.map((field) => (
@@ -179,70 +194,15 @@ const Questions = () => {
                   )}
                 </div>
               ))}
-            </div>
-          )}
 
-          {/* Questions 3–6 unchanged */}
-          {currentIndex === 2 && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-muted-foreground text-center text-lg mb-2">What's your risk tolerance?</p>
-              <select className="w-full p-2 rounded-md border border-border bg-background text-foreground">
-                <option value="">Select risk level</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-          )}
-
-          {currentIndex === 3 && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-muted-foreground text-center text-lg mb-2">
-                Which investment sectors interest you most?
-              </p>
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-foreground" /> Technology
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-foreground" /> Healthcare
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="accent-foreground" /> Energy
-                </label>
-              </div>
-            </div>
-          )}
-
-          {currentIndex === 4 && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-muted-foreground text-center text-lg mb-2">
-                What's your preferred investment horizon?
-              </p>
-              <div className="flex gap-4 flex-wrap justify-center">
-                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
-                  Short-term
-                </button>
-                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
-                  Medium-term
-                </button>
-                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
-                  Long-term
-                </button>
-              </div>
-            </div>
-          )}
-
-          {currentIndex === 5 && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-muted-foreground text-center text-lg mb-2">
-                Any additional notes or preferences?
-              </p>
-              <textarea
-                placeholder="Enter your thoughts"
-                className="w-full p-2 rounded-md border border-border bg-background text-foreground"
-                rows={4}
-              />
+              {/* Build Roadmap Button */}
+              {allFieldsFilled && (
+                <div className="mt-6 w-full flex justify-center">
+                  <button className="px-6 py-3 rounded-xl bg-hero-gradient text-white font-semibold hover:opacity-90 transition">
+                    Build My Roadmap
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -259,7 +219,7 @@ const Questions = () => {
             </button>
 
             <div className="flex space-x-2">
-              {[...Array(6)].map((_, idx) => (
+              {[0, 1].map((idx) => (
                 <span
                   key={idx}
                   className={`h-2 w-2 rounded-full ${
@@ -271,9 +231,9 @@ const Questions = () => {
 
             <button
               onClick={goNext}
-              disabled={currentIndex === 5}
+              disabled={currentIndex === 1}
               className={`p-2 rounded-full transition-colors hover:bg-muted ${
-                currentIndex === 5 ? "opacity-50 cursor-not-allowed" : ""
+                currentIndex === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
               <ArrowRight className="h-6 w-6 text-foreground" />
