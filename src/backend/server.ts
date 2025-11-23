@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
@@ -9,11 +9,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-app.post("/generate-roadmap", async (req: Request, res: Response) => {
+// Hardcoded test data
+const user_info: string[] = ['18', '70000', 'TFSA', '3000', 'monthly', '100000'];
+
+app.post("/generate-roadmap", async (req, res) => {
   try {
-    const { answers } = req.body as string[];
+    const answers = user_info;
 
     const [
       age,
@@ -46,18 +49,17 @@ Create a financial roadmap:
 3. Format all dates like: "Nov 29, 2025"
 `;
 
-    const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
 
-    res.json({ roadmap: result.text });
+    res.json({ roadmap: text });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-app.listen(5000, () => {
-  console.log("Backend running on http://localhost:5000");
+app.listen(3001, () => {
+  console.log("Backend running on http://localhost:3001");
 });
