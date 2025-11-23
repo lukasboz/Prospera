@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "./Navbar.tsx";
+import { GoogleGenAI } from "@google/genai";
 
 // Ticker → Company Name
 const stockInfo: Record<string, string> = {
@@ -85,6 +86,54 @@ const getRandomStocks = (list: string[], count: number) => {
 const Roadmap = () => {
   const location = useLocation();
   const [suggestedStocks, setSuggestedStocks] = useState<string[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const generateSpeech = async () => {
+    const key = (import.meta as any).env?.VITE_ELEVENLABS_API_KEY || "";
+    if (!key) {
+      alert("Missing VITE_ELEVENLABS_API_KEY in environment");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Note: replace the voice ID below if you want a different voice.
+      const voiceId = "21m00Tcm4TlvDq8ikWAM";
+
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": key,
+          Accept: "audio/mpeg",
+        },
+        body: JSON.stringify({ text: "hello world" }),
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("ElevenLabs TTS error:", txt);
+        alert("TTS request failed. See console for details.");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      if (audioRef.current) {
+        audioRef.current.src = url;
+        await audioRef.current.play();
+      } else {
+        const a = new Audio(url);
+        await a.play();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error generating speech. Check console for details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     setSuggestedStocks(getRandomStocks(stockList, 6));
@@ -108,13 +157,13 @@ const Roadmap = () => {
         <div className="flex flex-col gap-5">
 
           <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
-            <h2 className="text-xl font-semibold">Yearly Investments</h2>
-            <p className="text-lg font-bold">$50,000 / year (placeholder)</p>
+            <h2 className="text-xl font-semibold">Suggested Bank Account</h2>
+            <p className="text-lg font-bold">TFSA (Tax Free Savings Account)</p>
           </div>
 
           <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
             <h2 className="text-xl font-semibold">Monthly Investments</h2>
-            <p className="text-lg font-bold">$1,200 / month (placeholder)</p>
+            <p className="text-lg font-bold">$600 / month (minimum amount)</p>
           </div>
 
           <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
@@ -154,11 +203,15 @@ const Roadmap = () => {
           Revisit your allocations quarterly and adjust according to your risk tolerance."
         </p>
 
-        <div className="w-full flex justify-center mt-1">
-          <audio controls>
-            <source src="/path-to-audio.mp3" type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+        <div className="w-full flex flex-col items-center mt-1">
+          <button
+            className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
+            onClick={generateSpeech}
+            disabled={isLoading}
+          >
+            {isLoading ? "Generating..." : "Play Advice (Hello World)"}
+          </button>
+          <audio ref={audioRef} controls className="mt-2" />
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Navbar from "./Navbar.tsx";
 import { useNavigate } from "react-router-dom";
-import { accountScores } from "@/backend/accountScore";
+import { accountScores } from "@/backend/accountScore.ts";
 
 const Questions = () => {
   const router = useNavigate();
