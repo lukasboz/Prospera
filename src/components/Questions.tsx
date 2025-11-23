@@ -12,13 +12,18 @@ const Questions = () => {
 
 const question1Options = [
   {
+    category: "General Goals",
+    items: [
+      "Maximize government incentives",
+      "Contribute regularly",
+      "Take advantage of compounding",
+    ],
+  },
+  {
     category: "RRSP Goals",
     items: [
       "Save for retirement",
-      "Maximize government incentives",
       "Plan for early retirement",
-      "Contribute regularly (monthly/weekly)",
-      "Take advantage of compounding",
     ],
   },
   {
@@ -28,14 +33,16 @@ const question1Options = [
       "Low-risk investments",
       "Access funds without penalty",
       "Start small, learn as I go",
+      "Build an emergency fund",
+      "Save for a major purchase",
     ],
   },
   {
     category: "RESP Goals",
     items: [
-      "Save for your children’s education",
-      "Maximize government incentives",
-      "Take advantage of compounding",
+      "Save for my children’s education",
+      "Prepare for tuition increases",
+      "Ensure my child can attend post-secondary comfortably",
     ],
   },
   {
@@ -50,12 +57,9 @@ const question1Options = [
   {
     category: "RDSP Goals",
     items: [
-      "Plan for medical or disability needs (*)", // note: more points
-      "Maximize government incentives",
-      "Contribute regularly",
-      "Take advantage of compounding",
-      "Build an emergency fund",
-      "Save for a major purchase",
+      "Plan for medical or disability needs",
+      "Use the Canada Disability Savings Grant (CDSG)",
+      "Save for long-term financial security for disability",
     ],
   },
 ];
