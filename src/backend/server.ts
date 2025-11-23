@@ -11,8 +11,8 @@ app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-// Hardcoded test data
-const user_info: string[] = ['18', '70000', 'TFSA', '3000', 'monthly', '100000'];
+//hardcoded test data
+const user_info: string[] = ['18', '10000', 'TFSA', '100', 'monthly', '20000'];
 
 app.post("/generate-roadmap", async (req, res) => {
   try {
@@ -43,21 +43,34 @@ User info:
 - Contribution Frequency: ${contributionFrequency}
 - Target Amount: ${targetAmount}
 
-Create a financial roadmap based on the user information that was provided. 
+Create a financial roadmap based on the user information that was provided.
+First create a small blurb describing and explaining the personalized plan, then go STRAIGHT into the tasks.
+Do not put ANY more text. Do not put more text to introduce the roadmap like "**Financial Roadmap:**" NO. 
+Go straight into the tasks.
 Create 15 tasks (AND ALWAYS 15 tasks), and with each task, the money invested increases 
 little by little to eventually save up a lot of money and allows you to reinvest your earnings.
 Each task should be maximum 2 sentences (should be very concise and minimal).
 Be sure to include DEADLINES. using ${today} and the ${contributionFrequency}, include the date 
 at the end of the task at which it should be completed by.
-Example of task 3: "Invest $2000 by Nov 28, 2025"
-Example of task 12: "Invest $2500 by March 30, 2025"
+Example of task 3: "Invest $2000 by Nov 28, 2025. Focus on diversified low-cost ETFs."
+Example of task 12: "Invest $2500 by March 30, 2025. Consider diversifying into new asset classes within your TFSA."
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    res.json({ roadmap: text });
+    //split into array. each line is a task
+    const tasks = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => line.replace(/^\d+\.\s*/, '')); //remove "1. " prefix
+
+    console.log("TASKS ARRAY:");
+    console.log(tasks);
+
+    res.json({ tasks });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
