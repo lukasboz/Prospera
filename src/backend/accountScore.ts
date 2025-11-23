@@ -116,7 +116,7 @@ export function calculateScore(
     }
 
     // To be eligible for RDSP:
-    if (age <= 59 || !resident || !sin) {
+    if (age > 59 || !resident || !sin) {
         totals.RDSP = 0;
     }
 
@@ -125,6 +125,6 @@ export function calculateScore(
         .filter(r => r.score > 0)
         .sort((a, b) => b.score - a.score);
 
-    const topAccounts = results.slice(0, 2);
+    const topAccounts = results.slice(0, 1);
     return topAccounts;
 }
