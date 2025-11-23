@@ -86,8 +86,22 @@ const getRandomStocks = (list: string[], count: number) => {
 const Roadmap = () => {
   const location = useLocation();
   const [suggestedStocks, setSuggestedStocks] = useState<string[]>([]);
+  const [caption, setCaption] = useState<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const ai = new GoogleGenAI({ apiKey: "AIzaSyDYhPk1CTTuYLWB5Kc_QvU3R4PwJyQzMXo" });
+
+  async function speak(): Promise<string> {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: "Speak aloud a 30-second financial advice bit for new female investors.",
+    });
+
+    // Strip everything to the left of the first " if it exists
+    const text = response.text.includes('"') ? response.text.split('"')[1] : response.text;
+    return text;
+  }
 
   const generateSpeech = async () => {
     const key = (import.meta as any).env?.VITE_ELEVENLABS_API_KEY || "";
@@ -98,7 +112,9 @@ const Roadmap = () => {
 
     setIsLoading(true);
     try {
-      // Note: replace the voice ID below if you want a different voice.
+      const airesponse = await speak();
+      setCaption(airesponse);
+
       const voiceId = "21m00Tcm4TlvDq8ikWAM";
 
       const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
@@ -108,7 +124,7 @@ const Roadmap = () => {
           "xi-api-key": key,
           Accept: "audio/mpeg",
         },
-        body: JSON.stringify({ text: "hello world" }),
+        body: JSON.stringify({ text: airesponse }),
       });
 
       if (!res.ok) {
@@ -120,6 +136,7 @@ const Roadmap = () => {
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
+
       if (audioRef.current) {
         audioRef.current.src = url;
         await audioRef.current.play();
@@ -141,84 +158,79 @@ const Roadmap = () => {
 
   return (
     <div>
-  <Navbar />
+      <Navbar />
 
-  <div className="flex min-h-screen items-start justify-center bg-muted px-2 pt-20 pb-20">
-    <div className="bg-card rounded-2xl shadow-xl max-w-7xl w-full mx-4 p-8 flex flex-col gap-10">
+      <div className="flex min-h-screen items-start justify-center bg-muted px-2 pt-20 pb-20">
+        <div className="bg-card rounded-2xl shadow-xl max-w-7xl w-full mx-4 p-8 flex flex-col gap-10">
 
+          {/* Header */}
+          <h1 className="text-3xl font-bold text-center mt-2">Your Financial Roadmap</h1>
 
-      {/* Header */}
-      <h1 className="text-3xl font-bold text-center mt-2">Your Financial Roadmap</h1>
+          {/* --- MAIN GRID: LEFT + RIGHT --- */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-      {/* --- MAIN GRID: LEFT + RIGHT --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* LEFT SIDE (Investments) */}
+            <div className="flex flex-col gap-5">
 
-        {/* LEFT SIDE (Investments) */}
-        <div className="flex flex-col gap-5">
-
-          <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
-            <h2 className="text-xl font-semibold">Suggested Bank Account</h2>
-            <p className="text-lg font-bold">TFSA (Tax Free Savings Account)</p>
-          </div>
-
-          <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
-            <h2 className="text-xl font-semibold">Monthly Investments</h2>
-            <p className="text-lg font-bold">$600 / month (minimum amount)</p>
-          </div>
-
-          <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
-            <h2 className="text-xl font-semibold">Projected Stock Growth</h2>
-            <p className="text-lg font-bold">8.2 - 9.0%</p>
-          </div>
-
-        </div>
-
-
-        {/* RIGHT SIDE (Stock Picks) */}
-        <div className="bg-background p-5 rounded-xl shadow flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-center">Suggested Stock Picks</h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {suggestedStocks.map((ticker) => (
-              <div
-                key={ticker}
-                className="p-3 bg-muted rounded-lg flex items-center justify-center font-medium shadow text-center"
-              >
-                {ticker}
-                <span className="text-muted-foreground">&nbsp;({stockInfo[ticker]})</span>
+              <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
+                <h2 className="text-xl font-semibold">Suggested Bank Account</h2>
+                <p className="text-lg font-bold">TFSA (Tax Free Savings Account)</p>
               </div>
-            ))}
+
+              <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
+                <h2 className="text-xl font-semibold">Monthly Investments</h2>
+                <p className="text-lg font-bold">$600 / month (minimum amount)</p>
+              </div>
+
+              <div className="bg-background p-5 rounded-xl shadow text-center min-h-[90px] flex flex-col justify-center">
+                <h2 className="text-xl font-semibold">Projected Stock Growth</h2>
+                <p className="text-lg font-bold">8.2 - 9.0%</p>
+              </div>
+
+            </div>
+
+            {/* RIGHT SIDE (Stock Picks) */}
+            <div className="bg-background p-5 rounded-xl shadow flex flex-col gap-4">
+              <h2 className="text-xl font-semibold text-center">Suggested Stock Picks</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {suggestedStocks.map((ticker) => (
+                  <div
+                    key={ticker}
+                    className="p-3 bg-muted rounded-lg flex items-center justify-center font-medium shadow text-center"
+                  >
+                    {ticker}
+                    <span className="text-muted-foreground">&nbsp;({stockInfo[ticker]})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
-        </div>
 
-      </div>
+          {/* --- BOTTOM FULL-WIDTH ADVICE SECTION --- */}
+          <div className="bg-background p-5 rounded-xl shadow flex flex-col gap-3">
+            <h2 className="text-xl font-semibold">Financial Advice</h2>
 
-      {/* --- BOTTOM FULL-WIDTH ADVICE SECTION --- */}
-      <div className="bg-background p-5 rounded-xl shadow flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Financial Advice</h2>
+            <p className="text-muted-foreground italic text-sm leading-relaxed">
+              {caption || "Click 'Play Advice' to generate AI financial advice."}
+            </p>
 
-        <p className="text-muted-foreground italic text-sm leading-relaxed">
-          Audio transcription from AI-generated advice (Gemini): <br />
-          "Diversify your portfolio across multiple sectors and consider both long-term and short-term opportunities.
-          Revisit your allocations quarterly and adjust according to your risk tolerance."
-        </p>
+            <div className="w-full flex flex-col items-center mt-1">
+              <button
+                className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
+                onClick={generateSpeech}
+                disabled={isLoading}
+              >
+                {isLoading ? "Generating..." : "Play Advice"}
+              </button>
+              <audio ref={audioRef} controls className="mt-2" />
+            </div>
+          </div>
 
-        <div className="w-full flex flex-col items-center mt-1">
-          <button
-            className="rounded-md bg-primary px-4 py-2 text-white disabled:opacity-60"
-            onClick={generateSpeech}
-            disabled={isLoading}
-          >
-            {isLoading ? "Generating..." : "Play Advice (Hello World)"}
-          </button>
-          <audio ref={audioRef} controls className="mt-2" />
         </div>
       </div>
-
     </div>
-  </div>
-</div>
-
   );
 };
 
