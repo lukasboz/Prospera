@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/advancing-the-role-of-women-in-the-financial-services-sector.jpg";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+    const router = useNavigate();
   return (
     <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
       <div className="absolute inset-0 bg-subtle-gradient -z-10" />
@@ -24,7 +26,11 @@ const HeroSection = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-hero-gradient hover:opacity-90 transition-opacity text-base">
+              <Button
+                size="lg"
+                className="bg-hero-gradient hover:opacity-90 transition-opacity text-base"
+                onClick={() => router("/questions")}
+              >
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

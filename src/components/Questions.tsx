@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Navbar from "./Navbar.tsx";
+import { useNavigate } from "react-router-dom";
+
 
 const Questions = () => {
+  const router = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionsQ1, setSelectedOptionsQ1] = useState<string[]>([]);
   const [demographicsAnswers, setDemographicsAnswers] = useState<{ [key: string]: string }>({});
@@ -104,7 +107,7 @@ const question1Options = [
     <div>
       <Navbar />
 
-      <div className="flex min-h-screen items-center justify-center bg-background/50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background/50 px-4 pt-12">
         <div
           className="bg-card rounded-2xl shadow-xl w-full max-w-3xl p-8 relative animate-fade-in
                      max-h-[85vh] overflow-y-auto"
@@ -198,7 +201,10 @@ const question1Options = [
               {/* Build Roadmap Button */}
               {allFieldsFilled && (
                 <div className="mt-6 w-full flex justify-center">
-                  <button className="px-6 py-3 rounded-xl bg-hero-gradient text-white font-semibold hover:opacity-90 transition">
+                  <button
+                    onClick={() => router("/roadmap")}
+                    className="px-6 py-3 rounded-xl bg-hero-gradient text-white font-semibold hover:opacity-90 transition"
+                  >
                     Build My Roadmap
                   </button>
                 </div>

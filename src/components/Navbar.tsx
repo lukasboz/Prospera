@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useNavigate();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-soft">
@@ -65,9 +67,13 @@ const Navbar = () => {
             <SignedIn>
               <UserButton />
             </SignedIn>
-            <Button className="bg-hero-gradient hover:opacity-90 transition-opacity">
-              Get Started
-            </Button>
+              <Button
+                size="lg"
+                className="bg-hero-gradient hover:opacity-90 transition-opacity text-base"
+                onClick={() => router("/questions")}
+              >
+                Get Started
+              </Button>
           </div>
 
           {/* Mobile menu button */}
