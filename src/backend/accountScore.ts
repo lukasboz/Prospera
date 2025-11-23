@@ -125,6 +125,6 @@ export function calculateScore(
         .filter(r => r.score > 0)
         .sort((a, b) => b.score - a.score);
 
-    const topAccounts = results.slice(0, 1);
-    return topAccounts;
+    const topAccount = results.slice(0, 1);
+    return topAccount;
 }
