@@ -28,9 +28,6 @@ const HeroSection = () => {
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-base">
-                Watch Demo
-              </Button>
             </div>
             
             <div className="flex items-center gap-8 pt-4">
