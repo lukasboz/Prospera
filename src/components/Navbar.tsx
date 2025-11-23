@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,12 +24,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
+            <Link
+              to="/#features"
               className="text-foreground hover:text-primary transition-colors"
             >
               Features
-            </a>
+            </Link>
 
             <SignedIn>
               {/* Divider */}
@@ -88,12 +88,12 @@ const Navbar = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4 animate-fade-in">
-            <a
-              href="#features"
+            <Link
+              to="/#features"
               className="block py-2 text-foreground hover:text-primary transition-colors"
             >
               Features
-            </a>
+            </Link>
 
             <SignedIn>
               <div className="border-t border-border pt-2 flex flex-col space-y-2">
@@ -139,3 +139,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

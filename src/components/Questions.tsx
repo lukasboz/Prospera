@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Navbar from "./Navbar.tsx";
 import { useNavigate } from "react-router-dom";
-
+import { accountScores } from "@/backend/accountScore";
 
 const Questions = () => {
   const router = useNavigate();
@@ -13,60 +13,56 @@ const Questions = () => {
   const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, 1));
   const goPrev = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
-const question1Options = [
-  {
-    category: "General Goals",
-    items: [
-      "Maximize government incentives",
-      "Contribute regularly",
-      "Take advantage of compounding",
-    ],
-  },
-  {
-    category: "RRSP Goals",
-    items: [
-      "Save for retirement",
-      "Plan for early retirement",
-    ],
-  },
-  {
-    category: "TFSA Goals",
-    items: [
-      "Tax-free savings growth",
-      "Low-risk investments",
-      "Access funds without penalty",
-      "Start small, learn as I go",
-      "Build an emergency fund",
-      "Save for a major purchase",
-    ],
-  },
-  {
-    category: "RESP Goals",
-    items: [
-      "Save for my children’s education",
-      "Prepare for tuition increases",
-      "Ensure my child can attend post-secondary comfortably",
-    ],
-  },
-  {
-    category: "FHSA Goals",
-    items: [
-      "Save for my first home",
-      "Tax-free savings growth for home purchase",
-      "Contribute regularly",
-      "Access funds for first home without penalty",
-    ],
-  },
-  {
-    category: "RDSP Goals",
-    items: [
-      "Plan for medical or disability needs",
-      "Use the Canada Disability Savings Grant (CDSG)",
-      "Save for long-term financial security for disability",
-    ],
-  },
-];
-
+  const question1Options = [
+    {
+      category: "General Goals",
+      items: [
+        "Maximize government incentives",
+        "Contribute regularly",
+        "Take advantage of compounding",
+      ],
+    },
+    {
+      category: "RRSP Goals",
+      items: ["Save for retirement", "Plan for early retirement"],
+    },
+    {
+      category: "TFSA Goals",
+      items: [
+        "Tax-free savings growth",
+        "Low-risk investments",
+        "Access funds without penalty",
+        "Start small, learn as I go",
+        "Build an emergency fund",
+        "Save for a major purchase",
+      ],
+    },
+    {
+      category: "RESP Goals",
+      items: [
+        "Save for my children’s education",
+        "Prepare for tuition increases",
+        "Ensure my child can attend post-secondary comfortably",
+      ],
+    },
+    {
+      category: "FHSA Goals",
+      items: [
+        "Save for my first home",
+        "Tax-free savings growth for home purchase",
+        "Contribute regularly",
+        "Access funds for first home without penalty",
+      ],
+    },
+    {
+      category: "RDSP Goals",
+      items: [
+        "Plan for medical or disability needs",
+        "Use the Canada Disability Savings Grant (CDSG)",
+        "Save for long-term financial security for disability",
+      ],
+    },
+  ];
 
   const toggleOptionQ1 = (option: string) => {
     setSelectedOptionsQ1((prev) =>
@@ -106,6 +102,30 @@ const question1Options = [
   };
 
   const allFieldsFilled = question2Fields.every((field) => demographicsAnswers[field.key]?.trim());
+
+  // New function to tally selected goals and find the bank with highest count
+  const getTopAccount = (): string | null => {
+    const totals: Record<string, number> = { RRSP: 0, TFSA: 0, RESP: 0, FHSA: 0, RDSP: 0 };
+
+    selectedOptionsQ1.forEach((option) => {
+      const accounts = accountScores[option];
+      if (accounts) {
+        Object.keys(accounts).forEach((account) => {
+          totals[account] += 1; // Count each selected goal once
+        });
+      }
+    });
+
+    // Determine the account with the highest tally
+    const maxScore = Math.max(...Object.values(totals));
+    const topAccounts = Object.entries(totals)
+      .filter(([_, score]) => score === maxScore)
+      .map(([account]) => account);
+
+    const topAccount = topAccounts[0] || null; // return one if tie
+    console.log("Top Bank Account:", topAccount);
+    return topAccount;
+  };
 
   return (
     <div>
@@ -206,7 +226,11 @@ const question1Options = [
               {allFieldsFilled && (
                 <div className="mt-6 w-full flex justify-center">
                   <button
-                    onClick={() => router("/roadmap")}
+                    onClick={() =>
+                      router("/roadmap", {
+                        state: { selectedOptionsQ1, demographicsAnswers },
+                      })
+                    }
                     className="px-6 py-3 rounded-xl bg-hero-gradient text-white font-semibold hover:opacity-90 transition"
                   >
                     Build My Roadmap
