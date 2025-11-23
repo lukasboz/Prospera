@@ -28,12 +28,31 @@ const Navbar = () => {
             >
               Features
             </a>
-            <a
-              href="#about"
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              About
-            </a>
+
+            <SignedIn>
+              {/* Divider */}
+              <span className="h-8 w-px bg-foreground/60 mx-2" />
+
+              {/* New sections */}
+              <a
+                href="/questions"
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                Questionnaire
+              </a>
+              <a
+                href="/roadmap"
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                Roadmap
+              </a>
+              <a
+                href="/financial-overview"
+                className="text-foreground hover:text-primary transition-colors"
+              >
+                Overview
+              </a>
+            </SignedIn>
           </div>
 
           {/* CTA Buttons */}
@@ -69,12 +88,30 @@ const Navbar = () => {
             >
               Features
             </a>
-            <a
-              href="#about"
-              className="block py-2 text-foreground hover:text-primary transition-colors"
-            >
-              About
-            </a>
+
+            <SignedIn>
+              <div className="border-t border-border pt-2 flex flex-col space-y-2">
+                <a
+                  href="/questions"
+                  className="block py-2 text-foreground hover:text-primary transition-colors"
+                >
+                  Questionnaire
+                </a>
+                <a
+                  href="/roadmap"
+                  className="block py-2 text-foreground hover:text-primary transition-colors"
+                >
+                  Roadmap
+                </a>
+                <a
+                  href="/financial-overview"
+                  className="block py-2 text-foreground hover:text-primary transition-colors"
+                >
+                  Overview
+                </a>
+              </div>
+            </SignedIn>
+
             <div className="flex flex-col space-y-2 pt-4 border-t border-border">
               <SignedOut>
                 <SignInButton mode="modal">

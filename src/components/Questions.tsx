@@ -1,14 +1,285 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Navbar from "./Navbar.tsx";
 
 const Questions = () => {
-  const location = useLocation();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedOptionsQ1, setSelectedOptionsQ1] = useState<string[]>([]);
+  const [demographicsAnswers, setDemographicsAnswers] = useState<{ [key: string]: string }>({});
+
+  const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, 5));
+  const goPrev = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
+
+  const question1Options = [
+    {
+      category: "Save for retirement",
+      items: [
+        "Maximize government incentives",
+        "Plan for early retirement",
+        "Contribute regularly (monthly/weekly)",
+        "Take advantage of compounding",
+      ],
+    },
+    {
+      category: "Tax-free savings growth",
+      items: ["Low-risk investments", "Access funds without penalty", "Start small, learn as I go"],
+    },
+    {
+      category: "Save for your children’s education",
+      items: ["Maximize government incentives", "Take advantage of compounding"],
+    },
+    {
+      category: "Save for my first home",
+      items: [
+        "Tax-free savings growth for home purchase",
+        "Contribute regularly",
+        "Access funds for first home without penalty",
+      ],
+    },
+    {
+      category: "Plan for medical or disability needs",
+      items: [
+        "Maximize government incentives",
+        "Contribute regularly",
+        "Take advantage of compounding",
+        "Build an emergency fund",
+        "Save for a major purchase",
+      ],
+    },
+  ];
+
+  const toggleOptionQ1 = (option: string) => {
+    setSelectedOptionsQ1((prev) =>
+      prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
+    );
+  };
+
+  const provinces = [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Nova Scotia",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Northwest Territories",
+    "Nunavut",
+    "Yukon",
+  ];
+
+  const question2Fields = [
+    { label: "Age", key: "age", type: "text", placeholder: "Enter your age" },
+    { label: "Province of residence", key: "province", type: "dropdown" },
+    { label: "Are you a Canadian resident for tax purposes?", key: "resident", type: "yesno" },
+    { label: "Do you have a valid SIN?", key: "sin", type: "yesno" },
+    { label: "What is your current annual income?", key: "income", type: "text", placeholder: "Enter your annual income" },
+    { label: "What are your average monthly expenses?", key: "expenses", type: "text", placeholder: "Enter your monthly expenses" },
+    { label: "Are you a student?", key: "student", type: "yesno" },
+    { label: "Do you have a pension plan at work?", key: "pension", type: "yesno" },
+  ];
+
+  const handleDemographicsChange = (key: string, value: string) => {
+    setDemographicsAnswers((prev) => ({ ...prev, [key]: value }));
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">TODO: fill in this page</h1>
+    <div>
+      <Navbar />
 
+      <div className="flex min-h-screen items-center justify-center bg-background/50 px-4">
+        <div
+          className="bg-card rounded-2xl shadow-xl w-full max-w-3xl p-8 relative animate-fade-in
+                     max-h-[85vh] overflow-y-auto"
+        >
+          {/* Question Header */}
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center font-display">
+            Question {currentIndex + 1} of 6
+          </h2>
+
+          {/* Question 1 */}
+          {currentIndex === 0 && (
+            <div className="flex flex-col items-center gap-6 w-full">
+              {question1Options.map((group, idx) => (
+                <div key={idx} className="w-full">
+                  <p className="text-muted-foreground font-semibold mb-2">{group.category}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((item) => (
+                      <button
+                        key={item}
+                        onClick={() => toggleOptionQ1(item)}
+                        className={`px-3 py-2 rounded-md border transition-all ${
+                          selectedOptionsQ1.includes(item)
+                            ? "bg-hero-gradient text-white border-transparent"
+                            : "bg-background text-foreground border-border hover:bg-muted"
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <div className="mt-4 text-sm text-muted-foreground">
+                Selected: {selectedOptionsQ1.join(", ") || "None"}
+              </div>
+            </div>
+          )}
+
+          {/* Question 2 - Demographics */}
+          {currentIndex === 1 && (
+            <div className="flex flex-col items-center gap-6 w-full">
+              {question2Fields.map((field) => (
+                <div key={field.key} className="w-full flex flex-col gap-2">
+                  <p className="text-muted-foreground font-medium">{field.label}</p>
+
+                  {field.type === "text" && (
+                    <input
+                      type="text"
+                      placeholder={field.placeholder}
+                      value={demographicsAnswers[field.key] || ""}
+                      onChange={(e) => handleDemographicsChange(field.key, e.target.value)}
+                      className="w-full p-2 rounded-md border border-border bg-background text-foreground"
+                    />
+                  )}
+
+                  {field.type === "dropdown" && (
+                    <select
+                      value={demographicsAnswers[field.key] || ""}
+                      onChange={(e) => handleDemographicsChange(field.key, e.target.value)}
+                      className="w-full p-2 rounded-md border border-border bg-background text-foreground"
+                    >
+                      <option value="">Select a province/territory</option>
+                      {provinces.map((prov) => (
+                        <option key={prov} value={prov}>
+                          {prov}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {field.type === "yesno" && (
+                    <div className="flex gap-4">
+                      {["Yes", "No"].map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleDemographicsChange(field.key, option)}
+                          className={`px-4 py-2 rounded-md border transition-all ${
+                            demographicsAnswers[field.key] === option
+                              ? "bg-hero-gradient text-white border-transparent"
+                              : "bg-background text-foreground border-border hover:bg-muted"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Questions 3–6 unchanged */}
+          {currentIndex === 2 && (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-muted-foreground text-center text-lg mb-2">What's your risk tolerance?</p>
+              <select className="w-full p-2 rounded-md border border-border bg-background text-foreground">
+                <option value="">Select risk level</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          )}
+
+          {currentIndex === 3 && (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-muted-foreground text-center text-lg mb-2">
+                Which investment sectors interest you most?
+              </p>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" className="accent-foreground" /> Technology
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" className="accent-foreground" /> Healthcare
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" className="accent-foreground" /> Energy
+                </label>
+              </div>
+            </div>
+          )}
+
+          {currentIndex === 4 && (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-muted-foreground text-center text-lg mb-2">
+                What's your preferred investment horizon?
+              </p>
+              <div className="flex gap-4 flex-wrap justify-center">
+                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
+                  Short-term
+                </button>
+                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
+                  Medium-term
+                </button>
+                <button className="px-4 py-2 rounded-md bg-hero-gradient text-white hover:opacity-90 transition-opacity">
+                  Long-term
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentIndex === 5 && (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-muted-foreground text-center text-lg mb-2">
+                Any additional notes or preferences?
+              </p>
+              <textarea
+                placeholder="Enter your thoughts"
+                className="w-full p-2 rounded-md border border-border bg-background text-foreground"
+                rows={4}
+              />
+            </div>
+          )}
+
+          {/* Navigation Arrows */}
+          <div className="flex justify-between items-center mt-10">
+            <button
+              onClick={goPrev}
+              disabled={currentIndex === 0}
+              className={`p-2 rounded-full transition-colors hover:bg-muted ${
+                currentIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              <ArrowLeft className="h-6 w-6 text-foreground" />
+            </button>
+
+            <div className="flex space-x-2">
+              {[...Array(6)].map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`h-2 w-2 rounded-full ${
+                    idx === currentIndex ? "bg-foreground" : "bg-border"
+                  }`}
+                ></span>
+              ))}
+            </div>
+
+            <button
+              onClick={goNext}
+              disabled={currentIndex === 5}
+              className={`p-2 rounded-full transition-colors hover:bg-muted ${
+                currentIndex === 5 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              <ArrowRight className="h-6 w-6 text-foreground" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
