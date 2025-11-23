@@ -43,10 +43,14 @@ User info:
 - Contribution Frequency: ${contributionFrequency}
 - Target Amount: ${targetAmount}
 
-Create a financial roadmap:
-1. Summarize the goal
-2. Include actionable tasks with exact dates based on contribution frequency
-3. Format all dates like: "Nov 29, 2025"
+Create a financial roadmap based on the user information that was provided. 
+Create 15 tasks (AND ALWAYS 15 tasks), and with each task, the money invested increases 
+little by little to eventually save up a lot of money and allows you to reinvest your earnings.
+Each task should be maximum 2 sentences (should be very concise and minimal).
+Be sure to include DEADLINES. using ${today} and the ${contributionFrequency}, include the date 
+at the end of the task at which it should be completed by.
+Example of task 3: "Invest $2000 by Nov 28, 2025"
+Example of task 12: "Invest $2500 by March 30, 2025"
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
